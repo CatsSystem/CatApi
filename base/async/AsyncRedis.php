@@ -9,7 +9,7 @@
 namespace base\async;
 
 
-use sdk\config\Config;
+use base\core\Config;
 use GuzzleHttp\Promise\Promise;
 
 class AsyncRedis

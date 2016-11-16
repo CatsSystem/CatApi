@@ -1,6 +1,6 @@
 #!/bin/sh
 
-project_name="playurl_dev"
+project_name="async_server"
 path=$(cd `dirname $0`; pwd)
 
 Usage()

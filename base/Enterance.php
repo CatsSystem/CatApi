@@ -1,18 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: lidanyang
- * Date: 16/4/8
- * Time: 下午5:29
- */
 
 namespace base;
 
-use base\core\Config;
 use base\core\Formater;
 use base\server\SwooleServer;
-use base\log\Log;
-use service\ServiceAPI;
+use base\core\Config;
 
 class Enterance
 {
@@ -90,3 +82,4 @@ class Enterance
         $service->run();
     }
 }
+

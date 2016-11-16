@@ -9,7 +9,6 @@
 namespace base\cache;
 
 use base\core\Config;
-use base\log\Log;
 
 class Memcache
 {
@@ -29,27 +28,12 @@ class Memcache
 
     var $mmcache_available;
     var $memcache;
-    var $connect_type;
+    var $memc_connect = false;
     var $server;
-    var $backup_server;
-    var $port;
-
     function __construct()
     {
         $this->mmcache_available = false;
-        $this->connect_type  = Config::getField('memcache', 'connect');
-        $this->server        = Config::getField('memcache', 'host');
-        $this->backup_server = Config::getField('memcache', 'backup_host');
-        $this->port = -1;
-        if ($this->connect_type == 'tcp') {
-            $this->port = 11211;
-        } else if ($this->connect_type == 'socket') {
-            $this->port = 0;
-        }
-
-        if ($this->port < 0) {
-            Log::ERROR('Memcache', "memcache connect type should be [tcp|socket]");
-        }
+        $this->server = Config::getField('memcache', 'host');
     }
 
     /**
@@ -58,19 +42,15 @@ class Memcache
      */
     public function connect()
     {
-        if (class_exists("Memcache"))
+        if (class_exists("Memcached"))
         {
-            $this->memcache = new \Memcache;
-
-            if ($this->port < 0) {
-                return $this->mmcache_available;
-            }
-
-            $this->mmcache_available = $this->memcache->connect($this->server, $this->port);
-
-            if (!$this->mmcache_available && !empty($this->backup_server))
+            $this->memcache = new \Memcached;
+            // $this->mmcache_available = $this->memcache->pconnect('unix:///socks/memcached.sock',0);
+            $this->mmcache_available = $this->memcache->addServer($this->server, 11211);
+            if (!$this->mmcache_available && defined("MEMCACHE_BACKUP_SERVER"))
             {
-                $this->mmcache_available = $this->memcache->connect($this->backup_server, $this->port);
+                $this->server = Config::getField('memcache','backup_host');
+                $this->mmcache_available = $this->memcache->addServer(Config::getField('memcache','backup_host'), 11211);
             }
         }
         return $this->mmcache_available;

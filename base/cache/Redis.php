@@ -8,7 +8,7 @@
 
 namespace base\cache;
 
-use sdk\config\Config;
+use base\core\Config;
 
 class Redis
 {

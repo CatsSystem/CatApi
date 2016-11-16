@@ -10,7 +10,7 @@ namespace base\model;
 
 
 use GuzzleHttp\Promise\Promise;
-use sdk\config\Config;
+use base\core\Config;
 
 class Pool
 {

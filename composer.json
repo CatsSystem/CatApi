@@ -1,15 +1,5 @@
 {
-    "name": "bvc/vupload_url",
-    "license":"proprietary",
-    "authors": [
-        {
-            "name": "wangsheng",
-            "email": "wangsheng@bilibili.com"
-        }
-    ],
     "require": {
-        "bvc/service_sdk":"dev-master",
-        "hprose/hprose":"dev-master",
         "guzzlehttp/promises":"dev-master"
     },
     "config":

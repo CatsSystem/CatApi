@@ -14,6 +14,9 @@ use base\core\Config;
 class SwooleServer
 {
     private $_server;
+    /**
+     * @var ICallback
+     */
     private $_callback;
 
     private $config;
@@ -29,7 +32,7 @@ class SwooleServer
         $this->_server->set($config);
     }
 
-    public function setCallback($callback)
+    public function setCallback(ICallback $callback)
     {
         if( !( $callback instanceof ICallback ) )
         {
@@ -50,6 +53,7 @@ class SwooleServer
             'onFinish',
             'onManagerStart',
             'onManagerStop',
+            'onPipeMessage',
         );
         $this->_server->on('Start', array($this->_callback, 'onStart'));
         $this->_server->on('Shutdown', array($this->_callback, 'onShutdown'));
@@ -65,6 +69,7 @@ class SwooleServer
         if( !FileCache::getInstance()->loadRankCache(Config::getField('file_cache', 'path')) ){
             exit("load cache error");
         }
+        $this->_callback->beforeStart($this->_server);
         $this->_server->start();
     }
         

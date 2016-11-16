@@ -17,4 +17,5 @@ abstract class ICallback
     abstract public function onConnect();
 
     abstract public function setServer($server);
+    abstract public function beforeStart(\swoole_server $server);
 }

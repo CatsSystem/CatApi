@@ -7,7 +7,7 @@
  */
 
 return array(
-    'project_name' => 'playurl_dev',
+    'project_name' => 'async_server',
 
     'app_path' => 'apps',
     'ctrl_path' => 'ctrl',
@@ -27,11 +27,10 @@ return array(
         'log_level' => 5,
 
         // Work Process Config
-        'worker_num' => 16,
+        'worker_num' => 1,
         'dispatch_mode' => 3,
         'max_request' => 300000,
 
         'task_worker_num' => 1,
-        //'cpu_affinity_ignore' => [0],
     ),
 );

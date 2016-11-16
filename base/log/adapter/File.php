@@ -41,7 +41,7 @@ class File extends Logger
         {
             $this->file[$path] = fopen($log_file,'a');
         }
-        $str = date("Y-m-d H:i:s") . self::SEPARATOR . "[" . \getmypid() . "]" . self::SEPARATOR . $content;
+        $str = date("Y-m-d H:i:s") . self::SEPARATOR . $content;
         fwrite( $this->file[$path], $str . "\r\n");
     }
 }
