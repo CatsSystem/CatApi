@@ -10,7 +10,7 @@ namespace base\model;
 
 
 use GuzzleHttp\Promise\Promise;
-use sdk\config\Config;
+use base\core\Config;
 
 class Pool
 {
@@ -72,7 +72,6 @@ class Pool
                 $this->doTask();
             }
         }, function($reason) use ($id) {
-            var_dump($reason);
             $this->new_connect($id);
         });
         $driver->connect(false, $promise);

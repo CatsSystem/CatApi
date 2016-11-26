@@ -14,10 +14,7 @@ use base\model\AsyncModel;
 use base\model\Driver;
 use base\model\Pool;
 use GuzzleHttp\Promise\Promise;
-use sdk\config\Config;
-use server\HttpServer;
-
-;
+use base\core\Config;
 
 class SwooleMySQL extends Driver
 {
@@ -40,7 +37,6 @@ class SwooleMySQL extends Driver
         }
         $this->db = new \swoole_mysql();
         $this->db->on('Close', function($db){
-            Log::ERROR("MySQL", "MySQL Disconnect");
             $this->is_close = true;
             Pool::getInstance()->close($this, true);
         });
@@ -53,7 +49,6 @@ class SwooleMySQL extends Driver
         $this->db->connect(Config::get('swoole_mysql'), function($db, $r) use ($promise,$timeId) {
             swoole_timer_clear($timeId);
             if ($r === false) {
-                var_dump($this->id, $db->connect_errno, $db->connect_error);
                 if($promise){
                     $promise->reject($db->connect_error);
                 }
@@ -85,7 +80,6 @@ class SwooleMySQL extends Driver
 
     public function async_query($sql, Promise $promise, $is_query = false)
     {
-        Log::DEBUG("MySQL", "{$this->id} driver status " . ($this->is_close ? "close" : "open"));
         $timeId = swoole_timer_after(1000, function() use ($promise){
             Pool::getInstance()->close($this);
             $promise->resolve(AsyncModel::ERR_TIMEOUT);

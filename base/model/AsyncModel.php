@@ -26,7 +26,6 @@ class AsyncModel
         $driver = Pool::getInstance()->get($sql, $promise);
         if(empty($driver))
         {
-            var_dump("wait db");
             return;
         }
         $driver->async_query($sql, $promise);

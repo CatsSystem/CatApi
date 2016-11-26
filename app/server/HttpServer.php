@@ -10,7 +10,6 @@ namespace server;
 
 use api\Api;
 use base\async\AsyncRedis;
-use base\cache\Redis;
 use base\model\Pool;
 use base\core\Config;
 use base\Enterance;

@@ -16,6 +16,9 @@ class AsyncRedis
 {
     private static $instance = null;
 
+    /**
+     * @return AsyncRedis
+     */
     public static function getInstance()
     {
         if(AsyncRedis::$instance == null)
