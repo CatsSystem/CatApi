@@ -7,7 +7,7 @@
  */
 
 return array(
-    'redis_single' => array(
+    'redis' => array(
         'host' => '127.0.0.1',
         'port' => 6379,
     ),

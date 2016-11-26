@@ -13,7 +13,6 @@ use base\async\AsyncRedis;
 use base\model\Pool;
 use base\core\Config;
 use base\Enterance;
-use base\log\Log;
 use base\server\adapter\BaseCallback;
 use GuzzleHttp\Promise\Promise;
 use lib\Json;
@@ -40,34 +39,15 @@ class HttpServer extends BaseCallback
 
     public function onRequest(\swoole_http_request $request, \swoole_http_response $response)
     {
-        do{
-            if( $request->server['path_info'] == '/playurl')
-            {
-                if( !isset($request->get) )
-                {
-                    Log::INFO('Error' , "Access 200: no get");
-                    $response->status(200);
-                    $response->end("");
-                    break;
-                }
-                $result = Api::playurl($request, $response);
-                if($result != -1)
-                {
-                    $data['request'] = $request->get;
-                    $data['header'] = $request->header;
-                    $data['result'] = $result;
-                    Log::INFO('Access' , Json::json_encode($data));
-                    if(empty($result) || $result === false )
-                    {
-                        $response->status(502);
-                        $response->end("");
-                        break;
-                    }
-                    $response->end($result? $result : "");
-                }
-            }
-        } while(false);
-        return;
+        $path = $request->server['path_info'];
+        $path = str_replace('/', "\\", $path);
+        $method_name = "api\\Api\\{$path}";
+
+        if( function_exists($method_name) )
+        {
+            call_user_func($method_name, $request, $response);
+        }
+
     }
 
     public function onTask(\swoole_server $server, $task_id, $from_id, $data)

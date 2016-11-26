@@ -28,6 +28,9 @@ class AsyncRedis
         return AsyncRedis::$instance;
     }
 
+    /**
+     * @var \swoole_redis
+     */
     private $redis;
 
     private $is_close = true;
@@ -53,7 +56,7 @@ class AsyncRedis
                 $this->close();
                 $promise->resolve(-1);
             });
-            $this->redis->connect($this->config['host'], 6379,
+            $this->redis->connect($this->config['host'], $this->config['port'],
                 function (\swoole_redis $client, $result) use($timeId,$promise){
                     \swoole_timer_clear($timeId);
                     $this->is_close = false;
