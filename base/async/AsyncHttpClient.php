@@ -47,12 +47,11 @@ class AsyncHttpClient
         $client->get($url, function($cli) use($promise,$timeId,$client){
             \swoole_timer_clear($timeId);
             $client->close();
-            //var_dump($cli->body);
             $promise->resolve($cli->body);
         });
     }
 
-    public static function post($domain, $url, $data, $promise)
+    public static function post($domain, $url, $data, Promise $promise)
     {
         swoole_async_dns_lookup($domain, function ($host, $ip) use($promise) {
             $promise->resolve($ip);
