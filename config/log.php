@@ -9,6 +9,6 @@ return array(
     'log'=>array(
         'open_log' => false,
         'adapter' => 'File',
-        'path' => "/var/log/playurl/",
+        'path' => "/var/log/async/",
     ),
 );

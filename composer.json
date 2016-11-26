@@ -6,10 +6,10 @@
     {
         "secure-http":false
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url":  "git@syncsvn.bilibili.co:bvc_center/bvc_service_sdk.git"
+    "repositories": {
+        "packagist": {
+            "type": "composer",
+            "url": "https://packagist.phpcomposer.com"
         }
-    ]
+    }
 }

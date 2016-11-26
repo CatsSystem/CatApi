@@ -10,7 +10,7 @@ namespace base\model;
 
 
 use GuzzleHttp\Promise\Promise;
-use base\core\Config;
+use sdk\config\Config;
 
 class Pool
 {
@@ -32,10 +32,13 @@ class Pool
     private $count;
     private $total;
     private $callback;
+
+    private $task_queue;
     
     public function __construct()
     {
-        $this->queue = new \SplQueue();
+        $this->queue        = new \SplQueue();
+        $this->task_queue   = new \SplQueue();
     }
 
     public function init($callback = null, $count = 0)
@@ -64,6 +67,10 @@ class Pool
             {
                 call_user_func($this->callback);
             }
+            if (count($this->task_queue) > 0)
+            {
+                $this->doTask();
+            }
         }, function($reason) use ($id) {
             var_dump($reason);
             $this->new_connect($id);
@@ -72,20 +79,47 @@ class Pool
     }
 
     /**
-     * @return Driver
+     * @param $sql
+     * @param $promise
+     * @return mixed|null
      */
-    public function get()
+    public function get($sql, $promise)
     {
-        if( $this->queue->isEmpty() )
+        while ( !$this->queue->isEmpty() )
         {
-            return null;
+            $driver = $this->queue->dequeue();
+            if( $driver->isClose() )
+            {
+                continue;
+            }
+            return $driver;
         }
-        return $this->queue->dequeue();
+        $this->task_queue->enqueue([$sql, $promise]);
+        return null;
     }
 
-    public function close($driver)
+    /**
+     * @param $driver Driver
+     * @param bool $is_close
+     */
+    public function close($driver, $is_close = false)
     {
+        if( $is_close ) {
+            $this->new_connect($driver->getId());
+            return;
+        }
         $this->queue->enqueue($driver);
+        if (count($this->task_queue) > 0)
+        {
+            $this->doTask();
+        }
+    }
+
+    private function doTask()
+    {
+        $task = $this->task_queue->dequeue();
+        $driver = $this->get($task[0], $task[1]);
+        $driver->async_query($task[0], $task[1]);
     }
 
 }

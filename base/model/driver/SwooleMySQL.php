@@ -9,10 +9,12 @@
 namespace base\model\driver;
 
 
+use base\log\Log;
+use base\model\AsyncModel;
 use base\model\Driver;
 use base\model\Pool;
 use GuzzleHttp\Promise\Promise;
-use base\core\Config;
+use sdk\config\Config;
 use server\HttpServer;
 
 ;
@@ -25,10 +27,6 @@ class SwooleMySQL extends Driver
      */
     private $db;
 
-    private $is_close = true;
-
-    private $id;
-
     public function __construct($id)
     {
         $this->id = $id;
@@ -40,29 +38,31 @@ class SwooleMySQL extends Driver
         {
             $this->close();
         }
-        if( $this->is_close )
-        {
-            $this->db = new \swoole_mysql();
-            $timeId = swoole_timer_after(2000, function() use ($promise){
-                $this->close();
-                if ($promise) {
-                    $promise->reject(null);
-                }
-            });
-            $this->db->connect(Config::get('swoole_mysql'), function($db, $r) use ($promise,$timeId) {
-                swoole_timer_clear($timeId);
-                if ($r === false) {
-                    var_dump($this->id, $db->connect_errno, $db->connect_error);
-                    if($promise){
-                        $promise->reject($db->connect_error);
-                    }
-                    return;
-                }
+        $this->db = new \swoole_mysql();
+        $this->db->on('Close', function($db){
+            Log::ERROR("MySQL", "MySQL Disconnect");
+            $this->is_close = true;
+            Pool::getInstance()->close($this, true);
+        });
+        $timeId = swoole_timer_after(2000, function() use ($promise){
+            $this->close();
+            if ($promise) {
+                $promise->reject(null);
+            }
+        });
+        $this->db->connect(Config::get('swoole_mysql'), function($db, $r) use ($promise,$timeId) {
+            swoole_timer_clear($timeId);
+            if ($r === false) {
+                var_dump($this->id, $db->connect_errno, $db->connect_error);
                 if($promise){
-                    $promise->resolve($db);
+                    $promise->reject($db->connect_error);
                 }
-            });
-        }
+                return;
+            }
+            if($promise){
+                $promise->resolve($db);
+            }
+        });
     }
 
     public function query($sql, $is_query = false)
@@ -85,15 +85,16 @@ class SwooleMySQL extends Driver
 
     public function async_query($sql, Promise $promise, $is_query = false)
     {
-        $timeId = swoole_timer_after(3000, function() use ($promise){
+        Log::DEBUG("MySQL", "{$this->id} driver status " . ($this->is_close ? "close" : "open"));
+        $timeId = swoole_timer_after(1000, function() use ($promise){
             Pool::getInstance()->close($this);
-            $promise->resolve(null);
+            $promise->resolve(AsyncModel::ERR_TIMEOUT);
         });
         $this->db->query($sql, function($db, $result) use ($promise,$timeId){
             Pool::getInstance()->close($this);
             swoole_timer_clear($timeId);
             if($result === false) {
-                $promise->reject(null);
+                $promise->reject($db);
             } else if($result === true) {
                 $promise->resolve([$db->affected_rows, $db->insert_id]);
             } else {

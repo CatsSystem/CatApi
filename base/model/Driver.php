@@ -15,6 +15,9 @@ abstract class Driver
 {
     private static $instance = [];
 
+    protected $id;
+    protected $is_close = false;
+
     /**
      * @param $name
      * @param int $id
@@ -34,4 +37,16 @@ abstract class Driver
 
     abstract public function async_query($sql, Promise $promise, $is_query = false);
 
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function isClose()
+    {
+        return $this->is_close;
+    }
 }

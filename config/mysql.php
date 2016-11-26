@@ -8,10 +8,10 @@
 
 return array(
     'swoole_mysql' => array(
-        'host' => '172.16.0.5',
-        'user' => 'bilibili',
-        'password' => '5Fq2M4FbPZK4fhtE',
-        'database' => 'bilibili',
+        'host' => '127.0.0.1',
+        'user' => 'root',
+        'password' => '123456',
+        'database' => 'Test',
     ),
     'mysql_pool_count' => 5
 );

@@ -12,6 +12,8 @@ use GuzzleHttp\Promise\Promise;
 
 class AsyncModel
 {
+    const ERR_TIMEOUT = -1;
+    
     private $table;
 
     public function __construct($table)
@@ -21,17 +23,11 @@ class AsyncModel
 
     public function query($sql, Promise $promise)
     {
-        $driver = Pool::getInstance()->get();
+        $driver = Pool::getInstance()->get($sql, $promise);
         if(empty($driver))
         {
-            swoole_timer_tick(1, function($timer_id) use ($sql, $promise){
-                $driver = Pool::getInstance()->get();
-                if( !empty($driver) )
-                {
-                    swoole_timer_clear($timer_id);
-                    $driver->async_query($sql, $promise);
-                }
-            });
+            var_dump("wait db");
+            return;
         }
         $driver->async_query($sql, $promise);
     }
