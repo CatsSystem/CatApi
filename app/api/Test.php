@@ -8,6 +8,7 @@
 
 namespace api;
 
+use base\async\AsyncHttpClient;
 use base\async\AsyncRedis;
 use base\model\AsyncModel;
 use base\promise\PromiseGroup;
@@ -109,9 +110,31 @@ class Test
         $promise_group->run();
     }
 
-    public function HttpTest()
+    public function HttpTest(\swoole_http_request $request, \swoole_http_response $response)
     {
+        $promise_group = new PromiseGroup();
+        $promise_group->add("http_1", function(Promise $promise){
+            // 发起异步Redis请求
+            AsyncHttpClient::get("www.baidu.com", "/" , $promise);
+        });
+        $promise_group->add("http_2", function(Promise $promise){
+            // 发起异步Redis请求
+            AsyncHttpClient::getByIP("127.0.0.1", "/" , $promise);
+        });
+        $promise = new Promise();
+        $promise->then(function($value){
+            $data_1 = $value['http_1'];
+            $data_2 = $value['http_2'];
 
+            $promise = new Promise();
+            // 发起异步Http请求
+            AsyncHttpClient::post("www.test.com", "/" , ['id' => 1], $promise);
+            return $promise;
+        })->then(function($value) use ($request, $response) {
+            $response->end($value);
+        });
+        $promise_group->setPromise($promise);
+        $promise_group->run();
     }
 
 
