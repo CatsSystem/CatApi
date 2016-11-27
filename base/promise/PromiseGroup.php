@@ -67,7 +67,6 @@ class PromiseGroup
     {
         $promise = new Promise();
         $promise->then(function($value) use ($key, $callback) {
-            var_dump($key . ": " . $this->times[$key] - microtime(false));
             if( is_callable($callback) )
             {
                 $value = call_user_func($callback, true, $value);
@@ -77,7 +76,6 @@ class PromiseGroup
             $this->left --;
             if($this->left == 0)
             {
-                var_dump("total: " .$this->times[$key] - microtime(false));
                 $this->promise->resolve($this->values);
             }
         }, function($reason) use ($key, $callback) {

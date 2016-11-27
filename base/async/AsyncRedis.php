@@ -73,6 +73,15 @@ class AsyncRedis
 
     public function __call($name, $arguments)
     {
+        $index = count($arguments) - 1;
+        $promise = $arguments[$index];
+        if( ! $promise instanceof Promise )
+        {
+            return false;
+        }
+        $arguments[$index] = function (\swoole_redis $client, $result) use ($promise){
+            $promise->resolve($result);
+        };
         call_user_func_array([$this->redis, $name], $arguments);
     }
 

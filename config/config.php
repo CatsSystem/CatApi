@@ -23,7 +23,7 @@ return array(
     'socket' => array(
         'host' => '0.0.0.0',
         'port' => 9501,
-        'daemonize' => 1,
+        'daemonize' => 0,
         
         // Work Process Config
         'worker_num' => 1,

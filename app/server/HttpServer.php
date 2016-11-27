@@ -8,14 +8,12 @@
 
 namespace server;
 
-use api\Api;
 use base\async\AsyncRedis;
 use base\model\Pool;
 use base\core\Config;
 use base\Enterance;
 use base\server\adapter\BaseCallback;
 use GuzzleHttp\Promise\Promise;
-use lib\Json;
 
 class HttpServer extends BaseCallback
 {
@@ -39,20 +37,37 @@ class HttpServer extends BaseCallback
 
     public function onRequest(\swoole_http_request $request, \swoole_http_response $response)
     {
-        $path = $request->server['path_info'];
-        $path = str_replace('/', "\\", $path);
-        $method_name = "api\\Api\\{$path}";
+        $path = explode('/' , $request->server['path_info']);
 
-        if( function_exists($method_name) )
+        $controller = $path[1];
+        $method = $path[2];
+
+        $class_name = 'api\\' . $controller;
+        if( !class_exists($class_name) )
         {
-            call_user_func($method_name, $request, $response);
+            $response->status(403);
+            $response->end("");
+            return;
         }
-
+        $class = new $class_name();
+        if( method_exists($class, $method) )
+        {
+            $class->$method($request, $response);
+        }
     }
 
     public function onTask(\swoole_server $server, $task_id, $from_id, $data)
     {
-
+        //do something
+        $data = json_decode($data, true);
+        switch($data['op'])
+        {
+            case 1:{
+                var_dump($data['data']);
+                break;
+            }
+        }
+        return $data['data'];
     }
 
     public function onFinish()

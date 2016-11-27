@@ -66,9 +66,7 @@ class SwooleServer
                 $this->_server->on(\substr($handler, 2), array($this->_callback, $handler));
             }
         }
-        if( !FileCache::getInstance()->loadRankCache(Config::getField('file_cache', 'path')) ){
-            exit("load cache error");
-        }
+
         $this->_callback->beforeStart($this->_server);
         $this->_server->start();
     }

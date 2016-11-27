@@ -13,8 +13,6 @@ use GuzzleHttp\Promise\Promise;
 
 abstract class Driver
 {
-    private static $instance = [];
-
     protected $id;
     protected $is_close = false;
 

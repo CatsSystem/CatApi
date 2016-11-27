@@ -8,8 +8,6 @@
 
 namespace base\model\driver;
 
-
-use base\log\Log;
 use base\model\AsyncModel;
 use base\model\Driver;
 use base\model\Pool;
