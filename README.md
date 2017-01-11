@@ -55,8 +55,8 @@ AsyncHttpClient::get("www.baidu.com", "/" , $promise, true);
 
 ## 环境支持
 
-PHP 5.5+ / PHP7
-Swoole 1.8.8 以上版本
+PHP 5.5+ / PHP7 <br>
+Swoole 1.8.8 以上版本 (不适用于Swoole 2.0以上版本)
 
 ## 运行
 
