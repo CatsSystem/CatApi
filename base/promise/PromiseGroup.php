@@ -8,9 +8,6 @@
 
 namespace base\promise;
 
-
-use GuzzleHttp\Promise\Promise;
-
 class PromiseGroup
 {
     /**
@@ -79,6 +76,10 @@ class PromiseGroup
                 $this->promise->resolve($this->values);
             }
         }, function($reason) use ($key, $callback) {
+            if( is_callable($callback) )
+            {
+                $reason = call_user_func($callback, false, $reason);
+            }
             $this->promise->resolve($reason);
         });
         $this->promises[$key] = $promise;

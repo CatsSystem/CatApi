@@ -2,14 +2,15 @@
 
 namespace base;
 
-use base\core\Formater;
-use base\server\SwooleServer;
-use base\core\Config;
+use base\common\Formater;
+use base\socket\SwooleServer;
+use base\config\Config;
 
 class Enterance
 {
     private static $classPath = array();
     public static $rootPath;
+    public static $configPath;
 
     final public static function autoLoader($class)
     {
@@ -34,7 +35,7 @@ class Enterance
 
     final public static function exceptionHandler($exception)
     {
-        return json_encode(Formater::exception($exception));
+        return var_export(Formater::exception($exception), true);
     }
 
     final public static function fatalHandler()
@@ -50,27 +51,17 @@ class Enterance
         return json_encode(Formater::fatal($error));
     }
 
-    final public static function customError($errno, $errstr, $errfile, $errline)
-    {
-        $result['errno'] = $errno;
-        $result['errstr'] = $errstr;
-        $result['errfile'] = $errfile;
-        $result['errline'] = $errline;
-        //ServiceAPI::getInstance()->trace(Config::getField('service', 'service_id'), $result );
-        return false;
-    }
-
-    public static function run($runPath)
+    public static function run($runPath, $configPath)
     {
         self::$rootPath = $runPath;
+        self::$configPath = $configPath;
 
         \spl_autoload_register(__CLASS__ . '::autoLoader');
 
-        Config::load($runPath . '/config');
+        Config::load($runPath . '/config/' . $configPath);
 
         \set_exception_handler( __CLASS__ . '::exceptionHandler' );
         \register_shutdown_function( __CLASS__ . '::fatalHandler' );
-        set_error_handler(__CLASS__ . '::customError');
 
         $timeZone = Config::get('time_zone', 'Asia/Shanghai');
         \date_default_timezone_set($timeZone);
