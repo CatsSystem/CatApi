@@ -9,6 +9,7 @@
 namespace api\module\home;
 
 use base\async\cache\AsyncRedis;
+use base\async\http\AsyncHttpClient;
 use base\framework\BaseController;
 use base\model\MySQLStatement;
 use base\promise\PromiseGroup;
@@ -134,5 +135,19 @@ class Api extends BaseController
             'code' => Error::SUCCESS,
             'data'  => CacheLoader::getInstance()->get(Constants::CACHE_SAMPLE)
         ]);
+    }
+
+    public function testHttp()
+    {
+        $promise = new Promise();
+        $promise->then(function() {
+            $promise = new Promise();
+            AsyncHttpClient::get("www.baidu.com", "/" , $promise, true);
+            return $promise;
+        })->then(function($result) {
+            $this->request->callback($result);
+        });
+
+        $promise->resolve(0);
     }
 }

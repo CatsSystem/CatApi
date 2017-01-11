@@ -20,6 +20,7 @@ class Error
     const ERR_REDIS_CONNECT_FAILED                   = -20;
     const ERR_REDIS_ERROR                            = -21;
     const ERR_REDIS_TIMEOUT                          = -22;
-    
+
+    const ERR_HTTP_TIMEOUT                           = -25;
 
 }

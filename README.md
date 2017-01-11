@@ -42,6 +42,17 @@ MySQLStatement::prepare()
 
 ```
 
+### 异步Http
+
+```php
+$promise = new Promise();
+$promise->then(function($data) {
+    var_dump($data);
+});
+AsyncHttpClient::get("www.baidu.com", "/" , $promise, true);
+
+```
+
 ## 环境支持
 
 PHP 5.5+ / PHP7

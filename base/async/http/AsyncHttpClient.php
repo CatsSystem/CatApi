@@ -8,6 +8,7 @@
 
 namespace base\async\http;
 
+use base\common\Error;
 use base\promise\Promise;
 
 class AsyncHttpClient
@@ -22,12 +23,17 @@ class AsyncHttpClient
             $client->setHeaders($headers);
             $timeId = swoole_timer_after(3000, function() use ($client, $promise){
                 $client->close();
-                $promise->resolve(null);
+                $promise->resolve([
+                    'code'  => Error::ERR_HTTP_TIMEOUT
+                ]);
             });
             $client->get($url, function($cli) use($promise,$timeId,$client){
                 \swoole_timer_clear($timeId);
                 $client->close();
-                $promise->resolve($cli->body);
+                $promise->resolve([
+                    'code' => Error::SUCCESS,
+                    'data' => $cli->body
+                ]);
             });
         });
         swoole_async_dns_lookup($domain, function ($host, $ip) use($tmp_promise) {
@@ -35,18 +41,23 @@ class AsyncHttpClient
         });
     }
 
-    public static function getByIP($ip, $url, Promise $promise, $headers = [])
+    public static function getByIP($ip, $url, Promise $promise, $is_https = false, $headers = [])
     {
-        $client = new \swoole_http_client($ip, "80");
+        $client = new \swoole_http_client($ip, $is_https ? "443" :"80", $is_https);
         $client->setHeaders($headers);
         $timeId = swoole_timer_after(3000, function() use ($client, $promise){
             $client->close();
-            $promise->resolve(null);
+            $promise->resolve([
+                'code'  => Error::ERR_HTTP_TIMEOUT
+            ]);
         });
         $client->get($url, function($cli) use($promise,$timeId,$client){
             \swoole_timer_clear($timeId);
             $client->close();
-            $promise->resolve($cli->body);
+            $promise->resolve([
+                'code' => Error::SUCCESS,
+                'data' => $cli->body
+            ]);
         });
     }
 
@@ -59,12 +70,17 @@ class AsyncHttpClient
             $client->setHeaders($headers);
             $timeId = swoole_timer_after(3000, function() use ($client, $promise){
                 $client->close();
-                $promise->resolve(null);
+                $promise->resolve([
+                    'code'  => Error::ERR_HTTP_TIMEOUT
+                ]);
             });
             $client->post($url, $data, function($cli) use($promise,$timeId,$client){
                 \swoole_timer_clear($timeId);
                 $client->close();
-                $promise->resolve($cli->body);
+                $promise->resolve([
+                    'code' => Error::SUCCESS,
+                    'data' => $cli->body
+                ]);
             });
         });
         swoole_async_dns_lookup($domain, function ($host, $ip) use($tmp_promise) {
@@ -72,18 +88,23 @@ class AsyncHttpClient
         });
     }
 
-    public static function postByIP($ip, $url, $data, Promise $promise, $headers = [])
+    public static function postByIP($ip, $url, $data, Promise $promise, $is_https = false, $headers = [])
     {
-        $client = new \swoole_http_client($ip, "80");
+        $client = new \swoole_http_client($ip,  $is_https ? "443" :"80", $is_https);
         $client->setHeaders($headers);
         $timeId = swoole_timer_after(3000, function() use ($client, $promise){
             $client->close();
-            $promise->resolve(null);
+            $promise->resolve([
+                'code'  => Error::ERR_HTTP_TIMEOUT
+            ]);
         });
         $client->post($url, $data, function($cli) use($promise,$timeId,$client){
             \swoole_timer_clear($timeId);
             $client->close();
-            $promise->resolve($cli->body);
+            $promise->resolve([
+                'code' => Error::SUCCESS,
+                'data' => $cli->body
+            ]);
         });
     }
 }
