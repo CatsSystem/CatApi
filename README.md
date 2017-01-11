@@ -1,3 +1,47 @@
+## 介绍
+全异步Swoole API开发框架，内置Promise，异步MySQL连接池，内存缓存管理，异步Task方案等
+
+
+## 异步API
+
+### 异步Task
+
+```php
+$promise = new Promise();
+$promise->then(function($data) {
+    var_dump($data);
+});
+$this->sendTask('SampleTask', 'sample_task',[
+    'data' => 'Hello'
+], function($result) use ($promise) {
+    $promise->resolve($result['data']);
+});
+```
+
+### 异步Redis
+
+```php
+$promise = new Promise();
+$promise->then(function($data) {
+    var_dump($data);
+});
+AsyncRedis::getInstance()->get("cache", $promise);
+```
+
+### 异步MySQL
+
+```php
+$promise = new Promise();
+$promise->then(function($data) {
+    var_dump($data);
+});
+MySQLStatement::prepare()
+    ->select("Test", "*")->where([
+        'id'    => 1
+    ])->getOne($promise);
+
+```
+
 ## 环境支持
 
 PHP 5.5+ / PHP7
