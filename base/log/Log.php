@@ -6,9 +6,9 @@
  * Time: 上午10:07
  */
 
-namespace log;
+namespace base\log;
 
-use base\core\Config;
+use base\config\Config;
 
 class Log
 {
@@ -24,7 +24,6 @@ class Log
     }
 
     private $logger;
-    private $level;
 
     private function __construct($config)
     {

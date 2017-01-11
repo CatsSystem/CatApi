@@ -39,7 +39,7 @@ class AsyncRedis
 
     public function __construct()
     {
-        $this->config = Config::get('async_redis');
+        $this->config = Config::get('redis');
 
         //TODO Cluster
     }

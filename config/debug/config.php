@@ -9,9 +9,9 @@
 return array(
     'project_name' => 'async_server',
 
-    'app_path' => 'apps',
-    'ctrl_path' => 'ctrl',
-    'callback' => 'socket\\HttpServer',
+    'app_path' => 'app',
+    'ctrl_path' => 'api\\module',
+    'callback' => 'server\\HttpServer',
 
 
     'project'=>array(
@@ -19,6 +19,9 @@ return array(
     ),
 
     'socket' => array(
+        'mode'          => SWOOLE_PROCESS,
+        'socket_type'   => 'http',
+
         'host' => '0.0.0.0',
         'port' => 9501,
         'daemonize' => 0,

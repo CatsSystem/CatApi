@@ -9,7 +9,7 @@ return array(
     'log'=>array(
         'open_log' => true,
         'adapter' => 'File',
-        'log_level' => 1,
+        'log_level' => 0,
         'path' => __DIR__ . "/../../log/",
     ),
 );

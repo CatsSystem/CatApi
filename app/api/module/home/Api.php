@@ -30,22 +30,23 @@ class Api extends BaseController
             // Async Task
             $this->sendTask('SampleTask', 'sample_task',[
                 'data' => 'Hello'
-            ], function($data) use ($promise) {
-                $promise->resolve($data);
+            ], function($result) use ($promise) {
+                $promise->resolve($result['data']);
             });
 
             return $promise;
         })->then(function($result) {
-
             // save global data
             $this->global_data['async_task'] = $result;
 
             $promise = new Promise();
 
             // Async MySQL Query
-            MySQLStatement::prepare()->select("tb_user", "*")->where([
-                'id'    => $this->params['id']
-            ])->getOne($promise);
+            MySQLStatement::prepare()
+                ->select("Test", "*")->where([
+                    'id'    => $this->params['id']
+                ])->getOne($promise);
+
             return $promise;
         })->then(function($result) {
             if($result['code'] != Error::SUCCESS) {
@@ -96,7 +97,7 @@ class Api extends BaseController
             }, $handle);
 
             $promise_group->add("db", function(Promise $promise) {
-                MySQLStatement::prepare()->select("tb_user", "*")->where([
+                MySQLStatement::prepare()->select("Test", "*")->where([
                     'id'    => $this->params['id']
                 ])->getOne($promise);
             }, $handle);
@@ -105,10 +106,11 @@ class Api extends BaseController
             $promise_group->run();
             return $promise;
         })->then(function($result) {
+            var_dump($result);
             if( !empty($result['cache']) ) {
                 $this->request->callback([
                     'code' => Error::SUCCESS,
-                    'data' => $result['cache']
+                    'data' => json_decode($result['cache'], true)
                 ], true);
             }
 

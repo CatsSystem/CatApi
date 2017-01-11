@@ -10,6 +10,7 @@ namespace cache\adapter;
 use cache\ILoader;
 use common\Constants;
 use base\promise\Promise;
+use common\Error;
 
 class SampleCache extends ILoader
 {
@@ -23,6 +24,9 @@ class SampleCache extends ILoader
     {
         // 更新缓存数据, 结果使用$promise->resolve()返回
 
-        $promise->resolve("Hello World");
+        $promise->resolve([
+            'code'  => Error::SUCCESS,
+            'data'  => "Hello World"
+        ]);
     }
 }

@@ -6,9 +6,9 @@
  * Time: 上午10:08
  */
 
-namespace log\adapter;
+namespace base\log\adapter;
 
-use log\Logger;
+use base\log\Logger;
 
 class File extends Logger
 {

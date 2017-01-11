@@ -19,7 +19,7 @@ use base\task\Task;
 use base\task\TaskRoute;
 use cache\CacheLoader;
 use common\Constants;
-use log\Log;
+use base\log\Log;
 
 class HttpServer extends Http
 {
@@ -34,10 +34,9 @@ class HttpServer extends Http
         parent::onWorkerStart($server, $workerId);
         Config::load();
 
-        Pool::getInstance()->init();
-        AsyncRedis::getInstance()->connect(new Promise());
-
         if(!$server->taskworker) {
+            Pool::getInstance()->init();
+            AsyncRedis::getInstance()->connect(new Promise());
             CacheLoader::getInstance()->init($server);
         }
     }
@@ -64,22 +63,32 @@ class HttpServer extends Http
         $handle->setRequest($request);
         $handle->setResponse($response);
         $handle->setSocket($this->server);
-        
         $handle->init($module, $controller, $method,
             isset( $request->post ) ? $request->post : $request->rawContent());
 
         try {
             Route::route($handle, function($result) use ($handle, $request, $response) {
+                var_dump($result);
+                if( is_array($result) ) {
+                    $result = json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                }
                 $response->end($result);
             });
         } catch ( \Exception $e ) {
             Log::ERROR('Exception', var_export($e, true));
+            $response->status(502);
+            $response->end("");
         } catch ( \Error $e ) {
             Log::ERROR('Exception', var_export($e, true));
+            $response->status(502);
+            $response->end("");
         }
+    }
 
-        $response->status(502);
-        $response->end("");
+    public function onPipeMessage(\swoole_server $server, $from_worker_id, $message)
+    {
+        $data = json_decode($message, true);
+        CacheLoader::getInstance()->set($data['id'], $data['data']);
     }
 
     public function onTask(\swoole_server $server, $task_id, $from_id, $data)

@@ -35,6 +35,10 @@ class Enterance
 
     final public static function exceptionHandler($exception)
     {
+        var_dump($exception);
+        if( $exception instanceof \Error) {
+            return $exception;
+        }
         return var_export(Formater::exception($exception), true);
     }
 
@@ -54,13 +58,13 @@ class Enterance
     public static function run($runPath, $configPath)
     {
         self::$rootPath = $runPath;
-        self::$configPath = $configPath;
+        self::$configPath = $runPath . '/config/' . $configPath;
 
         \spl_autoload_register(__CLASS__ . '::autoLoader');
 
-        Config::load($runPath . '/config/' . $configPath);
+        Config::load(self::$configPath);
 
-        \set_exception_handler( __CLASS__ . '::exceptionHandler' );
+        //\set_exception_handler( __CLASS__ . '::exceptionHandler' );
         \register_shutdown_function( __CLASS__ . '::fatalHandler' );
 
         $timeZone = Config::get('time_zone', 'Asia/Shanghai');

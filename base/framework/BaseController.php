@@ -49,7 +49,7 @@ class BaseController
         ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         $this->request->getSocket()->task($data, -1, function(\swoole_server $serv, $task_id, $data) use ($callback) {
             if( is_callable($callback) ) {
-                $callback($data);
+                $callback(json_decode($data, true));
             }
         });
     }
