@@ -19,13 +19,13 @@ class AsyncModel
         $this->table = $table;
     }
 
-    public function query($sql, Promise $promise)
+    public function query($sql, Promise $promise, $timeout = 3000)
     {
-        $driver = Pool::getInstance()->get($sql, $promise);
+        $driver = Pool::getInstance()->get($sql, $promise, $timeout);
         if(empty($driver))
         {
             return;
         }
-        $driver->async_query($sql, $promise);
+        $driver->async_query($sql, $promise, $timeout);
     }
 }

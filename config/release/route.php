@@ -12,5 +12,7 @@ return [
         '/home/Api/testCache',
 
         '/home/Index/index',
+
+        '/admin/Console/stats',
     ]
 ];

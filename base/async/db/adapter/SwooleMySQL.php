@@ -27,7 +27,7 @@ class SwooleMySQL extends Driver
         $this->id = $id;
     }
 
-    public function connect($reconnect = false, Promise $promise = null)
+    public function connect($reconnect = false, Promise $promise = null, $timeout = 3000)
     {
         if($reconnect)
         {
@@ -38,7 +38,7 @@ class SwooleMySQL extends Driver
             $this->is_close = true;
             Pool::getInstance()->close($this, true);
         });
-        $timeId = swoole_timer_after(3000, function() use ($promise){
+        $timeId = swoole_timer_after($timeout, function() use ($promise){
             $this->close();
             if ($promise) {
                 $promise->reject(null);
@@ -58,11 +58,6 @@ class SwooleMySQL extends Driver
         });
     }
 
-    public function query($sql, $is_query = false)
-    {
-        throw new \Exception("Async Driver not support sync query");
-    }
-
     /**
      * @throws \Exception
      */
@@ -75,11 +70,11 @@ class SwooleMySQL extends Driver
         }
     }
 
-    public function async_query($sql, Promise $promise, $is_query = false)
+    public function async_query($sql, Promise $promise, $timeout)
     {
         $get_one    = $sql[1];
         $sql        = $sql[0];
-        $timeId = swoole_timer_after(3000, function() use ($promise, $sql){
+        $timeId = swoole_timer_after($timeout, function() use ($promise, $sql){
             Pool::getInstance()->close($this);
             $promise->resolve([
                 'code' => Error::ERR_MYSQL_TIMEOUT,

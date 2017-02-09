@@ -16,6 +16,8 @@ abstract class Driver
     protected $id;
     protected $is_close = false;
 
+    protected $config;
+
     /**
      * @param $name
      * @param int $id
@@ -31,9 +33,7 @@ abstract class Driver
 
     abstract public function close();
 
-    abstract public function query($sql, $is_query = false);
-
-    abstract public function async_query($sql, Promise $promise, $is_query = false);
+    abstract public function async_query($sql, Promise $promise, $timeout);
 
     /**
      * @return mixed

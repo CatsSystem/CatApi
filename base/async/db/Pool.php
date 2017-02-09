@@ -80,9 +80,10 @@ class Pool
     /**
      * @param $sql
      * @param $promise
-     * @return mixed|null
+     * @param $timeout
+     * @return Driver|null
      */
-    public function get($sql, $promise)
+    public function get($sql, $promise, $timeout)
     {
         while ( !$this->queue->isEmpty() )
         {
@@ -93,7 +94,7 @@ class Pool
             }
             return $driver;
         }
-        $this->task_queue->enqueue([$sql, $promise]);
+        $this->task_queue->enqueue([$sql, $promise, $timeout]);
         return null;
     }
 
@@ -117,8 +118,8 @@ class Pool
     private function doTask()
     {
         $task = $this->task_queue->dequeue();
-        $driver = $this->get($task[0], $task[1]);
-        $driver->async_query($task[0], $task[1]);
+        $driver = $this->get($task[0], $task[1], $task[2]);
+        $driver->async_query($task[0], $task[1], $task[2]);
     }
 
 }

@@ -20,6 +20,11 @@ use common\Error;
 
 class Api extends BaseController
 {
+    /**
+     * @var AsyncHttpClient
+     */
+    private $http;
+
     public function testApi()
     {
         // $this->request 请求对象
@@ -142,7 +147,17 @@ class Api extends BaseController
         $promise = new Promise();
         $promise->then(function() {
             $promise = new Promise();
-            AsyncHttpClient::get("www.baidu.com", "/" , $promise, true);
+            $this->http = new AsyncHttpClient("www.baidu.com");
+            $this->http->init($promise);
+            return $promise;
+        })->then(function($result) {
+            if($result != Error::SUCCESS) {
+                $this->request->callback([
+                    'code' => $result
+                ], true);
+            }
+            $promise = new Promise();
+            $this->http->get('/', $promise);
             return $promise;
         })->then(function($result) {
             $this->request->callback($result);

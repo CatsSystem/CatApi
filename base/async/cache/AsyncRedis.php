@@ -17,13 +17,14 @@ class AsyncRedis
     private static $instance = null;
 
     /**
+     * @param array $config
      * @return AsyncRedis
      */
-    public static function getInstance()
+    public static function getInstance($config = [])
     {
         if(AsyncRedis::$instance == null)
         {
-            AsyncRedis::$instance = new AsyncRedis();
+            AsyncRedis::$instance = new AsyncRedis($config);
         }
         return AsyncRedis::$instance;
     }
@@ -33,44 +34,45 @@ class AsyncRedis
      */
     private $redis;
 
-    private $is_close = true;
-
     private $config;
 
-    public function __construct()
+    private $timeout = 3000;
+
+    public function __construct($config)
     {
-        $this->config = Config::get('redis');
+        $this->config = $config;
+        if( empty($this->config) ) {
+            $this->config = Config::get('redis');
+        }
 
         //TODO Cluster
     }
 
-    public function connect(Promise $promise)
+    public function connect(Promise $promise, $timeout = 3000)
     {
-        if($this->is_close)
-        {
-            $this->redis = new \swoole_redis();
+        $this->redis = new \swoole_redis();
 
-            $this->redis->on("close", function(){
-                $this->is_close = true;
-                $this->connect(new Promise());
-            });
-            $timeId = swoole_timer_after(3000, function() use ($promise){
-                $this->close();
-                $promise->resolve([
-                    'code'  => Error::ERR_REDIS_TIMEOUT
-                ]);
-            });
-            $this->redis->connect($this->config['host'], $this->config['port'],
-                function (\swoole_redis $client, $result) use($timeId,$promise){
-                    \swoole_timer_clear($timeId);
-                    $this->is_close = false;
+        $this->redis->on("close", function(){
+            $this->connect(new Promise());
+        });
+        $timeId = swoole_timer_after($timeout, function() use ($promise){
+            $this->close();
+            $promise->resolve([
+                'code'  => Error::ERR_REDIS_TIMEOUT
+            ]);
+        });
+        $this->redis->connect($this->config['host'], $this->config['port'],
+            function (\swoole_redis $client, $result) use($timeId,$promise){
+                \swoole_timer_clear($timeId);
+                if( $result ) {
                     if( isset($this->config['pwd']) ) {
                         $client->auth($this->config['pwd'], function(\swoole_redis $client, $result) use ($promise){
-                            if( !$result ) {
+                            if( $result === false ) {
                                 $this->close();
                                 $promise->resolve([
                                     'code'  => Error::ERR_REDIS_ERROR,
-                                    'data'  => $result
+                                    'errCode'   => $client->errCode,
+                                    'errMsg'    => $client->errMsg,
                                 ]);
                                 return;
                             }
@@ -85,45 +87,68 @@ class AsyncRedis
                             'code'  => Error::SUCCESS
                         ]);
                     }
-            });
-        }
+                } else {
+                    $promise->resolve([
+                        'code'      => Error::ERR_REDIS_CONNECT_FAILED,
+                        'errCode'   => $client->errCode,
+                        'errMsg'    => $client->errMsg,
+                    ]);
+                    return;
+                }
+        });
     }
 
     public function close()
     {
         $this->redis->close();
-        $this->is_close = true;
     }
 
     public function __call($name, $arguments)
     {
-        $index = count($arguments) - 1;
-        $promise = $arguments[$index];
-        if( ! $promise instanceof Promise )
-        {
-            return false;
-        }
-        $timeId = swoole_timer_after(3000, function() use ($promise){
-            $this->close();
-            $promise->resolve([
-                'code'  => Error::ERR_REDIS_TIMEOUT
-            ]);
-        });
-        $arguments[$index] = function (\swoole_redis $client, $result) use ($timeId, $promise){
-            \swoole_timer_clear($timeId);
-            if( $result === false )
+        if( $name == 'subscribe' || $name == 'unsubscribe'
+            || $name == 'psubscribe' || $name == 'punsubscribe' ) {
+
+        } else {
+            $index = count($arguments) - 1;
+            $promise = $arguments[$index];
+            if( ! $promise instanceof Promise )
             {
-                $promise->resolve([
-                    'code'  => Error::ERR_REDIS_ERROR
-                ]);
-                return;
+                return false;
             }
-            $promise->resolve([
-                'code'  => Error::SUCCESS,
-                'data'  => $result
-            ]);
-        };
-        call_user_func_array([$this->redis, $name], $arguments);
+            $timeId = swoole_timer_after($this->timeout, function() use ($promise){
+                $this->close();
+                $promise->resolve([
+                    'code'  => Error::ERR_REDIS_TIMEOUT
+                ]);
+            });
+            $arguments[$index] = function (\swoole_redis $client, $result) use ($timeId, $promise){
+                \swoole_timer_clear($timeId);
+                if( $result === false )
+                {
+                    $promise->resolve([
+                        'code'      => Error::ERR_REDIS_ERROR,
+                        'errCode'   => $client->errCode,
+                        'errMsg'    => $client->errMsg,
+                    ]);
+                    return;
+                }
+                $promise->resolve([
+                    'code'  => Error::SUCCESS,
+                    'data'  => $result
+                ]);
+            };
+        }
+        return call_user_func_array([$this->redis, $name], $arguments);
+    }
+
+    /**
+     * @param mixed $timeout
+     * @return AsyncRedis
+     */
+    public function setTimeout($timeout)
+    {
+        $this->timeout = $timeout;
+        return $this;
     }
 
 }

@@ -6,14 +6,17 @@
  * Time: 下午3:03
  */
 
-namespace lib;
+namespace base\sync\db;
 
 use base\config\Config;
 
 class BaseDB
 {
     private static $instance = null;
-    
+
+    /**
+     * @return BaseDB
+     */
     public static function getInstance()
     {
         if(BaseDB::$instance == null)
@@ -35,6 +38,7 @@ class BaseDB
     /**
      * @param $sql
      * @return \PDOStatement
+     * @throws \Exception
      */
     public function query($sql)
     {
@@ -46,7 +50,7 @@ class BaseDB
                     $this->pdo = $this->connect();
                     return $this->run($sql);
                 } catch(\Exception $e) {
-
+                    throw $e;
                 }
             }
             return null;
@@ -61,6 +65,16 @@ class BaseDB
             return $statement;
         }
         return null;
+    }
+
+    public function last_id($key = "")
+    {
+        if( $key ) {
+            return $this->pdo->lastInsertId($key);
+        } else {
+            return $this->pdo->lastInsertId();
+        }
+
     }
 
     public function connect()

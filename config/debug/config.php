@@ -11,7 +11,7 @@ return array(
 
     'app_path' => 'app',
     'ctrl_path' => 'api\\module',
-    'callback' => 'server\\HttpServer',
+    'callback' => 'server\\WebSocket',
 
 
     'project'=>array(
@@ -20,7 +20,7 @@ return array(
 
     'socket' => array(
         'mode'          => SWOOLE_PROCESS,
-        'socket_type'   => 'http',
+        'socket_type'   => 'ws',
 
         'host' => '0.0.0.0',
         'port' => 9501,
@@ -28,8 +28,7 @@ return array(
         
         // Work Process Config
         'worker_num' => 1,
-        'dispatch_mode' => 3,
-        'max_request' => 300000,
+        'dispatch_mode' => 2,
 
         'task_worker_num' => 1,
     ),

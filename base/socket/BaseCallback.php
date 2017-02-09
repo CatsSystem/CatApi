@@ -18,7 +18,7 @@ abstract class BaseCallback
      */
     protected $server;
 
-    public function onClose()
+    public function onClose(\swoole_server $server, $fd, $from_id)
     {
 
     }

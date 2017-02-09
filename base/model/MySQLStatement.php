@@ -11,6 +11,7 @@ namespace base\model;
 
 use base\async\db\AsyncModel;
 use base\promise\Promise;
+use base\sync\db\BaseDB;
 
 class MySQLStatement extends DbQuery
 {
@@ -373,6 +374,40 @@ class MySQLStatement extends DbQuery
 		$this->_is_executed = true;
 		$model = new AsyncModel("");
 		$model->query([$this->sql(), true], $promise);
+	}
+
+	public function sync_query() {
+		$this->_is_executed = true;
+		$statement = BaseDB::getInstance()->query($this->sql());
+		if( empty($statement) ) {
+			return null;
+		}
+		return $statement->fetchAll(\PDO::FETCH_ASSOC);
+	}
+
+	public function sync_getOne()
+	{
+		$this->_is_executed = true;
+		$statement = BaseDB::getInstance()->query($this->sql());
+		if( empty($statement) ) {
+			return null;
+		}
+		return $statement->fetch(\PDO::FETCH_ASSOC);
+	}
+
+	public function execute($key = "") {
+		$this->_is_executed = true;
+		$statement = BaseDB::getInstance()->query($this->sql());
+		if( empty($statement) ) {
+			return null;
+		}
+		$last_id = BaseDB::getInstance()->last_id($key);
+		$row_count = $statement->rowCount();
+
+		return [
+			'last_id' 	=> $last_id,
+			'row_count' => $row_count
+		];
 	}
 }
 ?>
