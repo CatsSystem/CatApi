@@ -10,6 +10,7 @@ return [
         '/home/Api/testApi',
         '/home/Api/testMulti',
         '/home/Api/testCache',
+        '/home/Api/testTimer',
 
         '/home/Index/index',
 

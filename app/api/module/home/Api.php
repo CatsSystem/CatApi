@@ -14,6 +14,7 @@ use base\framework\BaseController;
 use base\model\MySQLStatement;
 use base\promise\PromiseGroup;
 use base\Promise\Promise;
+use base\timer\Timer;
 use cache\CacheLoader;
 use common\Constants;
 use common\Error;
@@ -164,5 +165,19 @@ class Api extends BaseController
         });
 
         $promise->resolve(0);
+    }
+
+    public function testTimer()
+    {
+        Timer::after(5000, 'Cancel', [
+            'ms'    => 1000,
+            'name'  => 'SampleTimer',
+            'key'   => 'key'
+        ]);
+
+        Timer::tick(1000, 'SampleTimer', 'key', [
+            'data' => 'Hello'
+        ]);
+        $this->request->callback("");
     }
 }

@@ -3,18 +3,18 @@
  * Created by PhpStorm.
  * User: lidanyang
  * Date: 17/2/9
- * Time: 21:33
+ * Time: 23:52
  */
-
 namespace timer;
 
 use base\timer\ITimer;
+use base\timer\Timer;
 
-class SampleTimer extends ITimer
+class Cancel extends ITimer
 {
 
     public function doAction()
     {
-        var_dump($this->params);
+        Timer::tick_cancel($this->params['ms'], $this->params['name'], $this->params['key']);
     }
 }

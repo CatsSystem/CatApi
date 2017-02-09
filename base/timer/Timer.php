@@ -28,9 +28,9 @@ class Timer
 
     private static $instance = [];
 
-    public static function tick($ms, $name, $params)
+    public static function tick($ms, $name, $key, $params)
     {
-        if( isset(Timer::$instance["$ms:$name"]) ) {
+        if( isset(Timer::$instance["$ms:$name:$key"]) ) {
             return;
         }
         $action = '\\timer\\' . $name;
@@ -41,13 +41,13 @@ class Timer
         } else {
             $class->setParams($params);
             $timer_id = swoole_timer_tick($ms, [$class, 'doAction']);
-            Timer::$instance["$ms:$name"] = $timer_id;
+            Timer::$instance["$ms:$name:$key"] = $timer_id;
         }
     }
 
-    public static function tick_cancel($ms, $name)
+    public static function tick_cancel($ms, $name, $key)
     {
-        $timer_id = Timer::$instance["$ms:$name"];
+        $timer_id = Timer::$instance["$ms:$name:$key"];
         swoole_timer_clear($timer_id);
     }
 
