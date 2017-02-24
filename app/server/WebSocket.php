@@ -49,7 +49,9 @@ class WebSocket extends Ws
     public function onMessage(\swoole_websocket_server $server, \swoole_websocket_frame $frame)
     {
         $data = json_decode($frame->data, true);
-
+        if( !in_array("/{$data['m']}/{$data['c']}/{$data['a']}", Config::get('route'))) {
+            return;
+        }
         $handle = new Request();
         $handle->setSocket($this->server);
         $data['fd'] = $frame->fd;
@@ -57,7 +59,6 @@ class WebSocket extends Ws
 
         try {
             Route::route($handle, function($result) use ($handle, $server, $frame) {
-                var_dump($result);
                 if( is_array($result) ) {
                     $result = json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
                 }
