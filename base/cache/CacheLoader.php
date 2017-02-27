@@ -5,9 +5,10 @@
  * Date: 16/12/2
  * Time: 下午9:53
  */
-namespace cache;
+namespace base\cache;
 
-use common\Error;
+use base\common\Error;
+use base\Enterance;
 use base\promise\Promise;
 
 class CacheLoader
@@ -37,7 +38,7 @@ class CacheLoader
 
     public function init(\swoole_server $server)
     {
-        $files = new \DirectoryIterator(__DIR__ . '/adapter');
+        $files = new \DirectoryIterator(Enterance::$rootPath . '/app/cache');
         foreach ($files as $file) {
             $filename = $file->getFilename();
             if ($filename[0] === '.') {
@@ -45,7 +46,7 @@ class CacheLoader
             }
             if (!$file->isDir()) {
                 $loader = substr($filename, 0, strpos($filename, '.'));
-                $class_name = __NAMESPACE__ . "\\adapter\\" . $loader;
+                $class_name = "\\cache\\" . $loader;
                 $ob = new $class_name();
                 if( ! $ob instanceof ILoader ) {
                     continue;

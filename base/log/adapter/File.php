@@ -12,8 +12,6 @@ use base\log\Logger;
 
 class File extends Logger
 {
-    const SEPARATOR = " | ";
-
     private $file_path;
     private $config;
     private $file = [];
@@ -38,16 +36,22 @@ class File extends Logger
         {
             return;
         }
-        $log_file = $this->file_path . $path;
+        $log_file = $this->file_path . $path . '_' .  date("Y-m-d");
         if( !isset($this->file[$path]) )
         {
+            $last = $this->file_path . $path . '_' .date("Y-m-d",strtotime("-1 day"));
+            if(isset($this->file[$last]))
+            {
+                fclose($this->file[$last]);
+                unset($this->file[$last]);
+            }
             $this->file[$path] = fopen($log_file,'a');
         }
         if( is_array($content) )
         {
-            $str = \date('Y-m-d H:i:s', time()) .": " . var_export($content, true);
+            $str = date('Y-m-d H:i:s') .": " . var_export($content, true);
         } else {
-            $str = date("Y-m-d H:i:s") . self::SEPARATOR . $content;
+            $str = date("Y-m-d H:i:s") .": " . $content;
         }
         fwrite( $this->file[$path], $str . "\r\n");
     }

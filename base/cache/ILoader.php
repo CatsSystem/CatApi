@@ -5,7 +5,7 @@
  * Date: 16/12/2
  * Time: 下午9:53
  */
-namespace cache;
+namespace base\cache;
 
 use base\promise\Promise;
 

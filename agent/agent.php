@@ -25,4 +25,5 @@ $server->on('Request', function(swoole_http_request $request, swoole_http_respon
     });
     $process->daemon(false, false);
     $process->start();
+    \Swoole\Process::wait(true);
 });

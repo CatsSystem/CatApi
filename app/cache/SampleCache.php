@@ -5,9 +5,9 @@
  * Date: 16/12/15
  * Time: 上午12:28
  */
-namespace cache\adapter;
+namespace cache;
 
-use cache\ILoader;
+use base\cache\ILoader;
 use common\Constants;
 use base\promise\Promise;
 use common\Error;

@@ -21,7 +21,7 @@ abstract class Logger
         {
             return;
         }
-        $path = $tag . "_DEBUG_" . date("Y-m-d");
+        $path = $tag . "_DEBUG";
         $this->save($path, $content);
     }
     public function error($tag, $content)
@@ -30,7 +30,7 @@ abstract class Logger
         {
             return;
         }
-        $path = $tag . "_ERROR_" . date("Y-m-d");
+        $path = $tag . "_ERROR";
         $this->save($path, $content);
     }
     public function info($tag, $content)
@@ -39,7 +39,7 @@ abstract class Logger
         {
             return;
         }
-        $path = $tag . "_INFO_" . date("Y-m-d");
+        $path = $tag . "_INFO";
         $this->save($path, $content);
     }
     public function warning($tag, $content)
@@ -48,7 +48,7 @@ abstract class Logger
         {
             return;
         }
-        $path = $tag . "_WARNING_" . date("Y-m-d");
+        $path = $tag . "_WARNING";
         $this->save($path, $content);
     }
 

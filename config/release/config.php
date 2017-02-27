@@ -11,7 +11,7 @@ return array(
 
     'app_path' => 'app',
     'ctrl_path' => 'api\\module',
-    'callback' => 'server\\WebSocket',
+    'callback' => 'server\\HttpServer',
 
 
     'project'=>array(
@@ -22,7 +22,7 @@ return array(
 
     'socket' => array(
         'mode'          => SWOOLE_PROCESS,
-        'socket_type'   => 'ws',
+        'socket_type'   => 'http',
 
         'host' => '0.0.0.0',
         'port' => 9501,
