@@ -1,0 +1,11 @@
+{
+  "require": {
+    "cat-sys/cat-micro": "v0.1.0"
+  },
+  "repositories": {
+    "packagist": {
+      "type": "composer",
+      "url": "https://packagist.org"
+    }
+  }
+}

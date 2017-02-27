@@ -1,5 +1,9 @@
 ## 介绍
-全异步Swoole API开发框架，内置Promise，异步MySQL连接池，内存缓存管理，异步Task方案等
+全异步Swoole Http API开发框架，内置Promise，异步MySQL连接池，内存缓存管理，异步Task方案等
+
+## 依赖
+
+[CatMicro](https://github.com/CatSyatem/CatMicro)
 
 
 ## 异步API
