@@ -10,6 +10,28 @@ namespace base\socket;
 
 class SwooleServer
 {
+    private static $instance = null;
+
+    /**
+     * @return SwooleServer
+     */
+    public static function getInstance()
+    {
+        if(SwooleServer::$instance == null)
+        {
+            SwooleServer::$instance = new SwooleServer();
+        }
+        return SwooleServer::$instance;
+    }
+    
+    protected function __construct()
+    {
+
+    }
+
+    /**
+     * @var \swoole_server
+     */
     private $_server;
     /**
      * @var BaseCallback
@@ -18,7 +40,7 @@ class SwooleServer
 
     private $config;
 
-    public function __construct(array $config)
+    public function init(array $config)
     {
         if(!\extension_loaded('swoole')) {
             throw new \Exception("no swoole extension. get: https://github.com/swoole/swoole-src");
@@ -61,6 +83,7 @@ class SwooleServer
         }
 
         $this->_server->set($config);
+        return $this;
     }
 
     public function setCallback($callback)
@@ -133,5 +156,13 @@ class SwooleServer
         $this->_callback->before_start();
         $this->_server->start();
     }
-        
+
+    /**
+     * @return \swoole_server
+     */
+    public function getServer()
+    {
+        return $this->_server;
+    }
+
 }

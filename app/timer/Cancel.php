@@ -7,8 +7,8 @@
  */
 namespace timer;
 
-use base\timer\ITimer;
-use base\timer\Timer;
+use base\framework\timer\ITimer;
+use base\framework\timer\Timer;
 
 class Cancel extends ITimer
 {

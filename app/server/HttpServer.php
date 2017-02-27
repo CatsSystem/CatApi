@@ -15,29 +15,20 @@ use base\framework\Route;
 use base\promise\Promise;
 use base\protocol\Request;
 use base\socket\adapter\Http;
-use base\task\Task;
-use base\task\TaskRoute;
-use cache\CacheLoader;
+use base\framework\cache\CacheLoader;
 use common\Constants;
 use base\log\Log;
 
 class HttpServer extends Http
 {
-    /**
-     * @var \swoole_server
-     */
-    public static $static_server;
-
     public function onWorkerStart($server, $workerId)
     {
-        self::$static_server = $server;
         parent::onWorkerStart($server, $workerId);
         Config::load();
-
         if(!$server->taskworker) {
             Pool::getInstance()->init();
             AsyncRedis::getInstance()->connect(new Promise());
-            CacheLoader::getInstance()->init($server);
+            CacheLoader::getInstance()->init();
         }
     }
 
@@ -68,7 +59,6 @@ class HttpServer extends Http
 
         try {
             Route::route($handle, function($result) use ($handle, $request, $response) {
-                var_dump($result);
                 if( is_array($result) ) {
                     $result = json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
                 }
@@ -85,29 +75,11 @@ class HttpServer extends Http
         }
     }
 
-    public function onPipeMessage(\swoole_server $server, $from_worker_id, $message)
-    {
-        $data = json_decode($message, true);
-        CacheLoader::getInstance()->set($data['id'], $data['data']);
-    }
-
-    public function onTask(\swoole_server $server, $task_id, $from_id, $data)
-    {
-        $task = new Task($data);
-        $result = TaskRoute::route($task);
-        return $result;
-    }
-
-    public function onFinish(\swoole_server $serv, $task_id, $data)
-    {
-
-    }
-
     public function before_start()
     {
         $process = new \swoole_process(function(\swoole_process $worker) {
             $worker->name(Config::get('project_name') . " cache process");
-            CacheLoader::getInstance()->init($this->server);
+            CacheLoader::getInstance()->init();
             AsyncRedis::getInstance()->connect(new Promise());
             Pool::getInstance()->init(function(){
                 CacheLoader::getInstance()->load(true);

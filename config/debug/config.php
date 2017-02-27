@@ -8,11 +8,9 @@
 
 return array(
     'project_name' => 'async_server',
-
-    'app_path' => 'app',
+    
     'ctrl_path' => 'api\\module',
     'callback' => 'server\\HttpServer',
-
 
     'project'=>array(
         'pid_path' => '/var/run',

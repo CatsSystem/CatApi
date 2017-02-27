@@ -9,7 +9,7 @@
 namespace task;
 
 use common\Error;
-use base\task\IRunner;
+use base\framework\task\IRunner;
 
 class SampleTask extends IRunner
 {

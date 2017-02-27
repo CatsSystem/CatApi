@@ -8,7 +8,7 @@
 
 namespace timer;
 
-use base\timer\ITimer;
+use base\framework\timer\ITimer;
 
 class SampleTimer extends ITimer
 {

@@ -8,7 +8,10 @@
 
 namespace base\socket;
 
+use base\cache\CacheLoader;
 use base\config\Config;
+use base\task\Task;
+use base\task\TaskRoute;
 
 abstract class BaseCallback
 {
@@ -100,7 +103,37 @@ abstract class BaseCallback
         $this->server = $server;
     }
 
+    /**
+     * @return \swoole_server
+     */
+    public function getServer()
+    {
+        return $this->server;
+    }
+
     abstract public function before_start();
+
+    public function onTask(\swoole_server $server, $task_id, $from_id, $data)
+    {
+        $task = new Task($data);
+        $result = TaskRoute::route($task);
+        return $result;
+    }
+
+    public function onFinish(\swoole_server $serv, $task_id, $data)
+    {
+
+    }
+
+    public function onPipeMessage(\swoole_server $server, $from_worker_id, $message)
+    {
+        $data = json_decode($message, true);
+        if( $data['type'] == 'cache' )
+        {
+            CacheLoader::getInstance()->set($data['id'], $data['data']);
+        }
+        return;
+    }
 
     /**
      * @param \swoole_server $server

@@ -70,7 +70,7 @@ class Enterance
         $timeZone = Config::get('time_zone', 'Asia/Shanghai');
         \date_default_timezone_set($timeZone);
 
-        $service = new SwooleServer(Config::get('socket'));
+        $service = SwooleServer::getInstance()->init(Config::get('socket'));
         
         $callback = Config::get('callback');
         $service->setCallback( new $callback() );

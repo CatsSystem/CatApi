@@ -6,15 +6,21 @@
  * Time: 21:31
  */
 
-namespace base\timer;
+namespace base\framework\timer;
 
 abstract class ITimer
 {
     protected $params;
 
-    public function __construct()
-    {
+    /**
+     * 定时器的Key值,用于找到定时器ID
+     * @var string
+     */
+    protected $key;
 
+    public function __construct($key)
+    {
+        $this->key = $key;
     }
 
     public function setParams($params)

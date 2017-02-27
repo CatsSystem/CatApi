@@ -6,9 +6,7 @@
  * Time: 21:29
  */
 
-namespace base\timer;
-
-use base\common\Factory;
+namespace base\framework\timer;
 
 class Timer
 {
@@ -16,7 +14,10 @@ class Timer
     public static function after($ms, $name, $params)
     {
         $action = '\\timer\\' . $name;
-        $class = Factory::getInstance($action);
+        if (!\class_exists($action)) {
+            throw new \Exception("no class {$action}");
+        }
+        $class = new $action("");
 
         if (!($class instanceof ITimer)) {
             throw new \Exception("timer not found");
@@ -34,7 +35,10 @@ class Timer
             return;
         }
         $action = '\\timer\\' . $name;
-        $class = Factory::getInstance($action);
+        if (!\class_exists("$ms:$name:$key")) {
+            throw new \Exception("no class {$action}");
+        }
+        $class = new $action();
 
         if (!($class instanceof ITimer)) {
             throw new \Exception("timer not found");

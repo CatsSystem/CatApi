@@ -8,15 +8,11 @@
 
 return array(
     'project_name' => 'async_server',
-
-    'app_path' => 'app',
+    
     'ctrl_path' => 'api\\module',
     'callback' => 'server\\HttpServer',
 
-
     'project'=>array(
-        'default_ctrl' => 'Main',
-        'default_method' => 'main',
         'pid_path' => '/var/run',
     ),
 
@@ -26,7 +22,7 @@ return array(
 
         'host' => '0.0.0.0',
         'port' => 9501,
-        'daemonize' => 0,
+        'daemonize' => 1,
         
         // Work Process Config
         'worker_num' => 1,

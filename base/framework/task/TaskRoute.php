@@ -5,7 +5,7 @@
  * Date: 16/12/6
  * Time: 下午11:09
  */
-namespace base\task;
+namespace base\framework\task;
 
 use base\common\Factory;
 use base\config\Config;

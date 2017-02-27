@@ -5,7 +5,7 @@
  * Date: 16/12/2
  * Time: 下午9:53
  */
-namespace base\cache;
+namespace base\framework\cache;
 
 use base\common\Error;
 use base\Enterance;
@@ -36,7 +36,7 @@ class CacheLoader
      */
     private $loaders;
 
-    public function init(\swoole_server $server)
+    public function init()
     {
         $files = new \DirectoryIterator(Enterance::$rootPath . '/app/cache');
         foreach ($files as $file) {
@@ -51,7 +51,6 @@ class CacheLoader
                 if( ! $ob instanceof ILoader ) {
                     continue;
                 }
-                $ob->setServer($server);
                 $this->loaders[$ob->getId()] = $ob;
             }
         }

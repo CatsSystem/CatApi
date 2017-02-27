@@ -5,7 +5,7 @@
  * Date: 16/12/6
  * Time: 下午11:15
  */
-namespace base\task;
+namespace base\framework\task;
 
 class Task
 {

@@ -6,7 +6,7 @@
  * Time: 下午11:15
  */
 
-namespace base\task;
+namespace base\framework\task;
 
 abstract class IRunner
 {
