@@ -7,7 +7,7 @@
  */
 namespace cache;
 
-use base\cache\ILoader;
+use base\framework\cache\ILoader;
 use common\Constants;
 use base\promise\Promise;
 use common\Error;
