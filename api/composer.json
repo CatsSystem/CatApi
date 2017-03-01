@@ -1,6 +1,6 @@
 {
   "require": {
-    "cat-sys/cat-micro": "v0.1.0"
+    "cat-sys/cat-api": "dev-master"
   },
   "repositories": {
     "packagist": {
