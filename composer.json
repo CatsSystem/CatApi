@@ -1,11 +1,19 @@
 {
+  "name": "cat-sys/cat-api",
+  "description": "Cat Micro Service Core",
+  "authors": [
+    {
+      "name": "lidanyang",
+      "email": "lancelot2014@foxmail.com"
+    }
+  ],
   "require": {
-    "cat-sys/cat-micro": "v0.1.0"
+    "php": ">=7"
   },
-  "repositories": {
-    "packagist": {
-      "type": "composer",
-      "url": "https://packagist.org"
+
+  "autoload": {
+    "psr-4": {
+      "base\\":"src/"
     }
   }
 }

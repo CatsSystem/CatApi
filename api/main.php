@@ -8,7 +8,7 @@
 
 use base\Enterance;
 
-require "vendor/autoload.php";
+require "../vendor/autoload.php";
 
 global $debug;
 Enterance::run(__DIR__, $debug);
