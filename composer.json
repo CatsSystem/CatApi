@@ -1,6 +1,6 @@
 {
   "name": "cat-sys/cat-api",
-  "description": "Cat Micro Service Core",
+  "description": "Cat Http API Framework",
   "authors": [
     {
       "name": "lidanyang",
