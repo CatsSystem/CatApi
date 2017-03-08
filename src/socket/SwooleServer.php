@@ -8,6 +8,8 @@
 
 namespace base\socket;
 
+use core\component\config\Config;
+
 class SwooleServer
 {
     private static $instance = null;
@@ -38,7 +40,6 @@ class SwooleServer
      */
     private $_callback;
 
-    private $config;
 
     public function init(array $config)
     {
@@ -46,43 +47,21 @@ class SwooleServer
             throw new \Exception("no swoole extension. get: https://github.com/swoole/swoole-src");
         }
 
-        $this->config = $config;
-
         switch ($config['socket_type'])
         {
-            case 'tcp':
-            {
-                $this->_server = new \swoole_server($config['host'], $config['port'], $config['mode'], SWOOLE_TCP);
-                break;
-            }
-            case 'udp':
-            {
-                $this->_server = new \swoole_server($config['host'], $config['port'], $config['mode'], SWOOLE_UDP);
-                break;
-            }
             case 'http':
             {
-                $this->_server = new \swoole_http_server($config['host'], $config['port'], $config['mode']);
+                $this->_server = new \swoole_http_server($config['host'], $config['port'], SWOOLE_PROCESS);
                 break;
             }
             case 'https':
             {
-                $this->_server = new \swoole_http_server($config['host'], $config['port'], $config['mode'], SWOOLE_TCP | SWOOLE_SSL);
-                break;
-            }
-            case 'ws':
-            {
-                $this->_server = new \swoole_websocket_server($config['host'], $config['port'], $config['mode']);
-                break;
-            }
-            case 'wss':
-            {
-                $this->_server = new \swoole_websocket_server($config['host'], $config['port'], $config['mode'], SWOOLE_TCP | SWOOLE_SSL);
+                $this->_server = new \swoole_http_server($config['host'], $config['port'], SWOOLE_PROCESS, SWOOLE_TCP | SWOOLE_SSL);
                 break;
             }
         }
 
-        $this->_server->set($config);
+        $this->_server->set(Config::get('swoole'));
         return $this;
     }
 
@@ -99,9 +78,11 @@ class SwooleServer
     public function run()
     {
         $handlerArray = array(
-            'onWorkerStart',
             'onWorkerStop',
             'onWorkerError',
+
+            'onConnect',
+            'onClose',
 
             'onTask',
             'onFinish',
@@ -111,41 +92,11 @@ class SwooleServer
 
             'onPipeMessage',
 
-            'onHandShake',
-            'onOpen',
         );
         $this->_server->on('Start', array($this->_callback, 'onStart'));
         $this->_server->on('Shutdown', array($this->_callback, 'onShutdown'));
-        $this->_server->on('Connect', array($this->_callback, 'onConnect'));
-        $this->_server->on('Close', array($this->_callback, 'onClose'));
-
-        switch ($this->config['socket_type'])
-        {
-            case 'tcp':
-            {
-                $this->_server->on('Receive', array($this->_callback, 'onReceive'));
-                break;
-            }
-            case 'udp':
-            {
-                $this->_server->on('Packet', array($this->_callback, 'onPacket'));
-                break;
-            }
-            case 'http':
-            case 'https':
-            {
-                $this->_server->on('Request', array($this->_callback, 'onRequest'));
-                break;
-            }
-            case 'ws':
-            case 'wss':
-            {
-                $this->_server->on('Request', array($this->_callback, 'onRequest'));
-                $this->_server->on('Message', array($this->_callback, 'onMessage'));
-                break;
-            }
-        }
-
+        $this->_server->on('WorkerStart', array($this->_callback, 'doWorkerStart'));
+        $this->_server->on('Request', array($this->_callback, 'doRequest'));
 
         foreach($handlerArray as $handler) {
             if(method_exists($this->_callback, $handler)) {

@@ -7,15 +7,19 @@
  */
 namespace base\framework;
 
-use base\config\Config;
 use base\protocol\Request;
+use core\component\config\Config;
 
 class Route
 {
-    public static function route(Request $request, callable $callback)
+    /**
+     * @param Request $request
+     * @return mixed|string
+     */
+    public static function route(Request $request)
     {
         try {
-            $action = Config::get('ctrl_path', 'api') . '\\' . $request->getModule() . '\\' . $request->getCtrl();
+            $action = Config::getField('project','ctrl_path', 'api') . '\\' . $request->getModule() . '\\' . $request->getCtrl();
             if (!\class_exists($action)) {
                 throw new \Exception("no class {$action}");
             }
@@ -24,17 +28,18 @@ class Route
             if ( !($class instanceof BaseController) || !method_exists($class, $method)) {
                 throw new \Exception("method error");
             }
-            $request->setCallback($callback);
+
             if( $class->before($request) ) {
-                $class->$method();
+                return yield $class->$method();
             }
+            return "";
         }catch (\Exception $e) {
-            $result =  \call_user_func('base\Enterance::exceptionHandler', $e);
+            $result =  \call_user_func('base\Entrance::exceptionHandler', $e);
             if( !Config::get('debug', false) )
             {
                 $result = "Error in Server";
             }
-            call_user_func($callback, $result);
+            return $result;
         }
     }
 }

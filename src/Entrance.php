@@ -2,37 +2,15 @@
 
 namespace base;
 
-use base\common\Formater;
 use base\socket\SwooleServer;
-use base\config\Config;
+use core\common\Formater;
+use core\component\config\Config;
 
-class Enterance
+class Entrance
 {
-    private static $classPath = array();
     public static $rootPath;
     public static $configPath;
-
-    final public static function autoLoader($class)
-    {
-        if(isset(self::$classPath[$class])) {
-            require self::$classPath[$class];
-            return;
-        }
-        $baseClasspath = \str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
-        $libs = array(
-            self::$rootPath . DIRECTORY_SEPARATOR . 'app',
-            self::$rootPath,
-        );
-        foreach ($libs as $lib) {
-            $classpath = $lib . DIRECTORY_SEPARATOR . $baseClasspath;
-            if (\is_file($classpath)) {
-                self::$classPath[$class] = $classpath;
-                require "{$classpath}";
-                return;
-            }
-        }
-    }
-
+    
     final public static function exceptionHandler($exception)
     {
         var_dump($exception);
@@ -60,20 +38,21 @@ class Enterance
         self::$rootPath = $runPath;
         self::$configPath = $runPath . '/config/' . $configPath;
 
-        \spl_autoload_register(__CLASS__ . '::autoLoader');
-
         Config::load(self::$configPath);
-
-        //\set_exception_handler( __CLASS__ . '::exceptionHandler' );
         \register_shutdown_function( __CLASS__ . '::fatalHandler' );
 
         $timeZone = Config::get('time_zone', 'Asia/Shanghai');
         \date_default_timezone_set($timeZone);
 
-        $service = SwooleServer::getInstance()->init(Config::get('socket'));
-        
-        $callback = Config::get('callback');
-        $service->setCallback( new $callback() );
+        $service = SwooleServer::getInstance()->init(Config::get('server'));
+
+        $callback = Config::getField('project', 'main_callback');
+        if( !class_exists($callback) )
+        {
+            throw new \Exception("No class {$callback}");
+        }
+        $callback = new $callback();
+        $service->setCallback($callback);
         $service->run();
     }
 }

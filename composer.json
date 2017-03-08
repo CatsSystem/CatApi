@@ -1,14 +1,16 @@
 {
   "name": "cat-sys/cat-api",
-  "description": "Cat Micro Service Core",
+  "description": "Cat Http API Framework",
   "authors": [
     {
       "name": "lidanyang",
       "email": "lancelot2014@foxmail.com"
     }
   ],
+  "minimum-stability": "dev",
   "require": {
-    "php": ">=7"
+    "php": ">=7",
+    "cat-sys/cat-core": "dev-master"
   },
 
   "autoload": {

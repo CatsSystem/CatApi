@@ -7,7 +7,7 @@
 
 namespace base\protocol;
 
-use base\config\Config;
+use core\component\config\Config;
 
 class Request
 {
@@ -185,22 +185,6 @@ class Request
     public function setResponse($response)
     {
         $this->_response = $response;
-    }
-
-    /**
-     * @param $result
-     * @param bool $exit
-     * @throws \Exception
-     */
-    public function callback($result, $exit = false)
-    {
-        if( is_callable($this->callback) )
-        {
-            call_user_func($this->callback, $result);
-        }
-        if( $exit ) {
-            throw new \Exception('exit');
-        }
     }
 
     /**
