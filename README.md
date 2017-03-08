@@ -3,4 +3,4 @@
 
 ## 依赖
 
-[CatCore](https://github.com/CatSyatem/CatCore)
+[CatCore](https://github.com/CatsSyatem/CatCore)
