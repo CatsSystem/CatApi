@@ -9,6 +9,7 @@
 namespace base\framework;
 
 use base\protocol\Request;
+use core\common\Error;
 
 class BaseController
 {
@@ -27,5 +28,21 @@ class BaseController
         $this->request = $request;
         $this->params = $request->getParams();
         return true;
+    }
+
+    protected function success($data)
+    {
+        return [
+            'code' => Error::SUCCESS,
+            'data' => $data
+        ];
+    }
+
+    protected function error($errCode, $errMsg = '')
+    {
+        return [
+            'code' => $errCode,
+            'msg' => $errMsg
+        ];
     }
 }
