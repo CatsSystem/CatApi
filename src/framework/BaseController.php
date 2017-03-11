@@ -30,6 +30,19 @@ class BaseController
         return true;
     }
 
+    protected function check()
+    {
+        $list = func_get_args();
+
+        foreach ($list as $name)
+        {
+            if( !isset($this->params[$name]) )
+            {
+                throw new \Exception("$name not found", Error::ERR_INVALID_DATA);
+            }
+        }
+    }
+
     protected function success($data)
     {
         return [
