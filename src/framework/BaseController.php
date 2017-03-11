@@ -43,8 +43,14 @@ class BaseController
         }
     }
 
-    protected function success($data)
+    protected function success($data = '')
     {
+        if( empty($data) )
+        {
+            return [
+                'code' => Error::SUCCESS
+            ];
+        }
         return [
             'code' => Error::SUCCESS,
             'data' => $data
