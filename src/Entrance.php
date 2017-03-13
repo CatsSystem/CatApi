@@ -26,9 +26,6 @@ class Entrance
                 'line' => $exception->getLine()
             ]);
         }
-        if( $exception instanceof \Error) {
-            return $exception;
-        }
         return json_encode(Formater::exception($exception),
             JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }

@@ -34,20 +34,31 @@ class Route
                 return yield $class->$method();
             }
             return "";
-        }catch (\Exception $e) {
-            if( $e->getCode() == Error::ERR_INVALID_DATA )
-            {
-                return [
-                    'code' => $e->getCode(),
-                    'msg'   => $e->getMessage(),
-                ];
-            }
-            $result =  \call_user_func('base\Entrance::exceptionHandler', $e);
-            if( !Config::get('debug', true) )
-            {
-                $result = "Error in Server";
-            }
-            return $result;
+        } catch (\Exception $e) {
+            return self::handleException($e);
+        } catch (\Error $e) {
+            return self::handleException($e);
         }
+    }
+
+    /**
+     * @param $e \Exception | \Error
+     * @return array|mixed|string
+     */
+    private static function handleException($e)
+    {
+        if( $e->getCode() == Error::ERR_INVALID_DATA )
+        {
+            return [
+                'code' => $e->getCode(),
+                'msg'   => $e->getMessage(),
+            ];
+        }
+        $result =  \call_user_func('base\Entrance::exceptionHandler', $e);
+        if( !Config::get('debug', true) )
+        {
+            $result = "Error in Server";
+        }
+        return $result;
     }
 }
