@@ -10,11 +10,21 @@ class Entrance
 {
     public static $rootPath;
     public static $configPath;
-    
+
+    /**
+     * @param $exception  \Exception | \Error
+     * @return mixed
+     * @throws \Exception
+     */
     final public static function exceptionHandler($exception)
     {
         if(Config::get('debug', true)) {
-            var_dump($exception);
+            var_dump([
+                'message' => $exception->getMessage(),
+                'code' => $exception->getCode(),
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine()
+            ]);
         }
         if( $exception instanceof \Error) {
             return $exception;
