@@ -35,10 +35,6 @@ class Request
      */
     private $_socket = null;
 
-    private $callback;
-
-    private $_server;
-
     /**
      * @var Request[]
      */
@@ -136,16 +132,6 @@ class Request
         return $this->_method;
     }
 
-    public function setServer($server)
-    {
-        $this->_server = $server;
-    }
-
-    public function getServer()
-    {
-        return $this->_server;
-    }
-
     public function setRequest($request)
     {
         $this->_request = $request;
@@ -188,14 +174,6 @@ class Request
     }
 
     /**
-     * @param mixed $callback
-     */
-    public function setCallback($callback)
-    {
-        $this->callback = $callback;
-    }
-
-    /**
      * @return mixed
      */
     public function getQueryString()
@@ -217,6 +195,16 @@ class Request
     public function setModule($module)
     {
         $this->_module = $module;
+    }
+
+    public function __debugInfo() {
+        return [
+            'module' => $this->_module,
+            'ctrl' => $this->_ctrl,
+            'method' => $this->_method,
+            'params' => $this->_params,
+            '_query_string' => $this->_query_string
+        ];
     }
 
 }

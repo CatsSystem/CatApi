@@ -13,11 +13,14 @@ class Entrance
     
     final public static function exceptionHandler($exception)
     {
-        var_dump($exception);
+        if(Config::get('debug', true)) {
+            var_dump($exception);
+        }
         if( $exception instanceof \Error) {
             return $exception;
         }
-        return var_export(Formater::exception($exception), true);
+        return json_encode(Formater::exception($exception),
+            JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 
     final public static function fatalHandler()

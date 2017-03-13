@@ -43,7 +43,7 @@ class Route
                 ];
             }
             $result =  \call_user_func('base\Entrance::exceptionHandler', $e);
-            if( !Config::get('debug', false) )
+            if( !Config::get('debug', true) )
             {
                 $result = "Error in Server";
             }
