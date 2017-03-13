@@ -36,14 +36,7 @@ class Entrance
     final public static function fatalHandler()
     {
         $error = \error_get_last();
-        if(empty($error)) {
-            return '';
-        }
-        if(!in_array($error['type'], array(E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR))) {
-            return '';
-        }
-
-        return json_encode(Formater::fatal($error));
+        return json_encode(Formater::fatal($error), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 
     public static function run($runPath, $configPath)
