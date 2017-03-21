@@ -38,9 +38,10 @@ class BaseController
         {
             if( !isset($this->params[$name]) )
             {
-                throw new \Exception("$name not found", Error::ERR_INVALID_DATA);
+                return false;
             }
         }
+        return true;
     }
 
     protected function success($data = '')

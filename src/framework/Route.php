@@ -47,13 +47,6 @@ class Route
      */
     private static function handleException($e)
     {
-        if( $e->getCode() == Error::ERR_INVALID_DATA )
-        {
-            return [
-                'code' => $e->getCode(),
-                'msg'   => $e->getMessage(),
-            ];
-        }
         $result =  \call_user_func('base\Entrance::exceptionHandler', $e);
         if( !Config::get('debug', true) )
         {
