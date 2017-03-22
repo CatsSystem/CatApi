@@ -29,11 +29,11 @@ class Route
             if ( !($class instanceof BaseController) || !method_exists($class, $method)) {
                 throw new \Exception("method error");
             }
-
-            if( $class->before($request) ) {
+            $result = $class->before($request);
+            if( $result === true ) {
                 return yield $class->$method();
             }
-            return "";
+            return $result;
         } catch (\Exception $e) {
             return self::handleException($e);
         } catch (\Error $e) {
