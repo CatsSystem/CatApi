@@ -11,6 +11,7 @@ namespace base\socket;
 use core\common\Globals;
 use core\component\cache\CacheLoader;
 use core\component\config\Config;
+use core\component\log\Log;
 use core\component\task\TaskRoute;
 use core\concurrent\Promise;
 
@@ -95,6 +96,11 @@ abstract class BaseCallback
     public function onWorkerStop($server, $workerId)
     {
         
+    }
+
+    public function onWorkerError(\swoole_server $serv, $worker_id, $worker_pid, $exit_code, $signal)
+    {
+        Log::ERROR('Worker', sprintf("Worker %d[%d] exit code[%d], signal=%d", $worker_id, $worker_pid, $exit_code, $signal));
     }
 
     public function setServer(\swoole_server $server)
