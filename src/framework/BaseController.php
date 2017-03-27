@@ -46,7 +46,7 @@ class BaseController
 
     protected function success($data = '')
     {
-        if( empty($data) )
+        if( $data === '' )
         {
             return [
                 'code' => Error::SUCCESS
