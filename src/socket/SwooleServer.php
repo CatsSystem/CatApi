@@ -104,7 +104,7 @@ class SwooleServer
             }
         }
         
-        $this->_callback->before_start();
+        $this->_callback->beforeStart();
         $this->_server->start();
     }
 

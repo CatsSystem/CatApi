@@ -136,9 +136,9 @@ abstract class BaseCallback
      * 打开内存Cache进程
      * @param $init_callback callable 回调函数, 执行进程的初始化代码
      */
-    protected function open_cache_process($init_callback)
+    protected function openCacheProcess($init_callback)
     {
-        $process = CacheLoader::open_cache_process($init_callback);
+        $process = CacheLoader::openCacheProcess($init_callback);
         if( empty($process) )
         {
             return;
@@ -156,7 +156,7 @@ abstract class BaseCallback
     /**
      * 服务启动前执行该回调, 用于添加额外监听端口, 添加额外Process
      */
-    abstract public function before_start();
+    abstract public function beforeStart();
 
     /**
      * @param \swoole_http_request $request
