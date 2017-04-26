@@ -7,10 +7,10 @@
       "email": "lancelot2014@foxmail.com"
     }
   ],
-  "minimum-stability": "dev",
+
   "require": {
     "php": ">=7",
-    "cat-sys/cat-core": "dev-master"
+    "cat-sys/cat-core": "v0.1.0"
   },
 
   "autoload": {
