@@ -62,7 +62,7 @@ class Request
             $request->getResponse()->end("");
             unset($request);
         }
-        unset(self::$instances);
+        self::$instances = [];
     }
 
     public function init($module, $ctrl, $method, $params)
