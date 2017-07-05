@@ -8,6 +8,7 @@
 
 namespace base\socket;
 
+use base\protocol\Request;
 use core\common\Globals;
 use core\component\cache\CacheLoader;
 use core\component\config\Config;
@@ -101,6 +102,7 @@ abstract class BaseCallback
     public function onWorkerError(\swoole_server $serv, $worker_id, $worker_pid, $exit_code, $signal)
     {
         Log::ERROR('Worker', sprintf("Worker %d[%d] exit code[%d], signal=%d", $worker_id, $worker_pid, $exit_code, $signal));
+        Request::exception();
     }
 
     public function setServer(\swoole_server $server)

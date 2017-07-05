@@ -10,7 +10,7 @@
 
   "require": {
     "php": ">=7",
-    "cat-sys/cat-core": "v0.1.0"
+    "cat-sys/cat-core": "dev-master"
   },
 
   "autoload": {
